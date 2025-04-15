@@ -17,7 +17,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 
 # Import the API module
-from ipl_score_prediction.src.api.api import IPLScorePredictor, PredictionInput, PredictionResult, PredictionError
+from src.api.api import IPLScorePredictor, PredictionInput, PredictionResult, PredictionError
 
 # Configure logging
 logging.basicConfig(
@@ -135,4 +135,5 @@ if __name__ == "__main__":
     # For production, you should use a proper ASGI server like uvicorn
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 

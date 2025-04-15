@@ -393,7 +393,7 @@ def create_visualizations(
         
         # Create venue statistics visualization
         venue_viz_path = os.path.join(VISUALIZATIONS_DIR, "venue_statistics.png")
-        fig = plot_venue_statistics(deliveries_df)
+        fig = plot_venue_statistics(deliveries_df, matches_df)
         fig.savefig(venue_viz_path, dpi=300, bbox_inches='tight')
 
         # Create seasonal trends visualization
@@ -444,7 +444,7 @@ def run_workflow(model_type: str = 'rf', tune: bool = True):
             model_type=model_type,
             tune=tune
         )
-        evaluate_trained_model(test_data=model_data)
+        evaluate_trained_model(os.path.join(MODELS_DIR, f'ipl_score_{model_type}_model.pkl'), test_data=model_data)
         create_visualizations(matches_df, deliveries_df, model, preprocessor, feature_names)
         logger.info("Workflow completed successfully.")
     except Exception as e:
@@ -458,6 +458,7 @@ def main():
     parser.add_argument("--model-type", choices=["lr", "rf", "gb"], default="rf", help="Type of model to train")
     parser.add_argument("--no-tune", action="store_true", help="Disable hyperparameter tuning")
     parser.add_argument("--input", type=str, help="Path to input JSON file for prediction")
+    parser.add_argument("--model-path", type=str, help="Path to trained model file")
 
     args = parser.parse_args()
 
@@ -467,7 +468,7 @@ def main():
         model_data = engineer_features(matches_df, deliveries_df, prediction_data)
         train_model(model_data, model_type=args.model_type, tune=not args.no_tune)
     elif args.action == "evaluate":
-        evaluate_trained_model()
+        evaluate_trained_model(args.model_path)
     elif args.action == "predict":
         if not args.input:
             logger.error("Input file path required for prediction.")
@@ -484,3 +485,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
